@@ -22,8 +22,20 @@
         </template>
       </el-table-column>
       <el-table-column label="操作">
-        <el-button type="warning" icon="el-icon-edit">修改</el-button>
-        <el-button type="danger" icon="el-icon-delete">删除</el-button>
+        <template v-slot="{ row }">
+          <el-button
+            type="warning"
+            icon="el-icon-edit"
+            @click="showUpdateTrademark(row)"
+            >修改</el-button
+          >
+          <el-button
+            type="danger"
+            icon="el-icon-delete"
+            @click="deleteTrademark(row)"
+            >删除</el-button
+          >
+        </template>
       </el-table-column>
     </el-table>
 
@@ -38,7 +50,10 @@
     >
     </el-pagination>
 
-    <el-dialog :visible.sync="visible" title="添加品牌">
+    <el-dialog
+      :visible.sync="visible"
+      :title="`${isUpdate ? '修改' : '添加'}品牌`"
+    >
       <el-form :model="trademark" :rules="rules" label-width="100px" ref="form">
         <el-form-item label="品牌名称" prop="tmName">
           <el-input v-model="trademark.tmName"></el-input>
@@ -65,7 +80,7 @@
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="visible = false">取消</el-button>
-        <el-button @click="addTrademark" type="primary">确定</el-button>
+        <el-button @click="handleTrademark" type="primary">确定</el-button>
       </span>
     </el-dialog>
   </el-card>
@@ -75,6 +90,8 @@
 import {
   reqGetTrademarkList,
   reqSaveTrademark,
+  reqDeleteTrademark,
+  reqUpdateTrademark,
 } from "../../../api/product/trademark";
 
 export default {
@@ -104,6 +121,7 @@ export default {
           { required: true, message: "请上传品牌LOGO", trigger: "change" },
         ],
       },
+      isUpdate: false,
     };
   },
   methods: {
@@ -147,27 +165,69 @@ export default {
       // false 不会上传
       return isValidFileType && isLt;
     },
-    // 添加品牌
-    addTrademark() {
+    // 添加或修改品牌
+    handleTrademark() {
       this.$refs.form.validate(async (valid) => {
         if (valid) {
           const { tmName, logoUrl } = this.trademark;
-          await reqSaveTrademark(tmName, logoUrl);
+
+          if (this.isUpdate) {
+            reqUpdateTrademark(this.trademark);
+          } else {
+            await reqSaveTrademark(tmName, logoUrl);
+          }
           this.$message({
             type: "success",
-            message: "添加品牌成功~",
+            message: `${this.isUpdate ? "更新" : "添加"}品牌成功~`,
           });
-          this.getTrademarkList(this.currentPage, this.pageSize);
+          await this.getTrademarkList(this.currentPage, this.pageSize);
           this.visible = false;
         }
       });
     },
     // 显示添加品牌对话框
     showSaveTrademark() {
+      this.isUpdate = false;
       this.visible = true;
       // 清空表单
-      this.$nextTick(() => {
-        this.$refs.form.resetFields();
+      //可选链式语法
+      this.$refs.form?.resetFields();
+      //清空trademark以表单
+      this.trademark = {
+        tmName: "",
+        logoUrl: "",
+      };
+    },
+    // 显示更新品牌对话框
+    showUpdateTrademark(row) {
+      this.isUpdate = true;
+      this.visible = true;
+      // 清空表单
+      //可选链式语法
+      this.trademark = { ...row };
+    },
+
+    deleteTrademark(row) {
+      this.$confirm(
+        `此操作将永久删除 <span style='color:red'>${row.tmName} </span>, 是否继续?`,
+        `提示`,
+        {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+          dangerouslyUseHTMLString: "true",
+        }
+      ).then(async () => {
+        await reqDeleteTrademark(row.id);
+
+        this.$message({
+          type: "success",
+          message: "删除成功!",
+        });
+        if (this.trademarkList.length === 1 && this.currentPage !== 1) {
+          this.currentPage--;
+        }
+        await this.getTrademarkList(this.currentPage, this.pageSize);
       });
     },
   },

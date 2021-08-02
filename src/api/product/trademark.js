@@ -17,3 +17,17 @@ export function reqSaveTrademark(tmName, logoUrl) {
     }
   });
 }
+export function reqUpdateTrademark(data) {
+  return request({
+    url: "/admin/product/baseTrademark/update",
+    method: "PUT",
+    data
+  });
+}
+
+export function reqDeleteTrademark(id) {
+  return request({
+    method: "DELETE",
+    url: `/admin/product/baseTrademark/remove/${id}`
+  });
+}
