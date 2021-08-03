@@ -49,23 +49,24 @@
           ></el-option>
         </el-select>
         <el-button type="primary" icon="el-icon-plus">添加属性值</el-button>
-        <!--         <el-table
-          :data="attrList"
+        <el-table
+          :data="spu.spuSaleAttrList"
           border
           style="width: 100%"
           class="attr_table"
           v-loading="loading"
         >
-          <el-table-column prop="categoryId" label="序号" width="50">
+          <el-table-column type="index" label="序号" width="50">
           </el-table-column>
-          <el-table-column prop="attrName" label="属性名称"> </el-table-column>
-          <el-table-column prop="attrValueList" label="属性值列表">
+          <el-table-column prop="saleAttrName" label="属性名称">
+          </el-table-column>
+          <el-table-column prop="spuSaleAttrValueList" label="属性值列表">
             <template v-slot="{ row }">
               <el-tag
-                v-for="attrValue in row.attrValueList"
-                :key="attrValue.id"
+                v-for="ssav in row.spuSaleAttrValueList"
+                :key="ssav.id"
                 class="tag"
-                >{{ attrValue.valueName }}</el-tag
+                >{{ ssav.saleAttrValueName }}</el-tag
               >
             </template>
           </el-table-column>
@@ -87,7 +88,7 @@
               </el-tooltip>
             </template>
           </el-table-column>
-        </el-table> -->
+        </el-table>
       </el-form-item>
       <el-form-item>
         <el-button type="primary">确定</el-button>
@@ -107,6 +108,7 @@ export default {
   name: "AddOrUpdateSpu",
   data() {
     return {
+      loading: false,
       dialogImageUrl: "",
       dialogVisible: false,
       spuId: "",
@@ -139,12 +141,11 @@ export default {
     const res = await Promise.allSettled([
       reqGetTrademarkList(),
       reqGetSaleAttrList(),
-      reqGetSpuSaleAttrList(1535),
+      reqGetSpuSaleAttrList(1),
     ]);
     this.spu.trademarkList = res[0].value;
     this.baseSaleAttrList = res[1].value;
     this.spu.spuSaleAttrList = res[2].value.spuSaleAttrList;
-    console.log(this.spu.spuSaleAttrList);
   },
   methods: {
     // 上传成功触发的回调
