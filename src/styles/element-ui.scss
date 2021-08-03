@@ -51,3 +51,7 @@
 .el-pagination__sizes {
   float: right;
 }
+/* css 父选择器控制子选择器 */
+.spu-img-upload .el-upload {
+  display: none;
+}

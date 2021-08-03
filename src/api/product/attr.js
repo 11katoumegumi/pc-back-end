@@ -12,3 +12,23 @@ export function reqDeleteAttr(attrId) {
     url: `/admin/product/deleteAttr/${attrId}`
   });
 }
+
+export function reqSaveAttrInfo({
+  attrName,
+  attrValueList,
+  categoryId: category3Id,
+  categoryLevel,
+  id
+}) {
+  return request({
+    method: "POST",
+    url: "/admin/product/saveAttrInfo",
+    data: {
+      attrName,
+      attrValueList,
+      categoryId: category3Id,
+      categoryLevel,
+      id
+    }
+  });
+}

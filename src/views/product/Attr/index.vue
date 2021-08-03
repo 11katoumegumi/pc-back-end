@@ -4,12 +4,13 @@
     <CategorySelector />
 
     <!-- 列表 -->
-    <el-card class="box-card">
+    <el-card class="box-card" v-if="!isAddOrUpdateShow">
       <el-button
         type="primary"
         icon="el-icon-plus"
         :disabled="!category3Id"
         class="btn"
+        @click="isAddOrUpdateShow = true"
       >
         添加属性</el-button
       >
@@ -65,7 +66,11 @@
         </el-table-column>
       </el-table>
     </el-card>
-    <AddOrUpdateAttr />
+    <AddOrUpdateAttr
+      :categoryId="category3Id"
+      v-else
+      :isAddOrUpdateShow.sync="isAddOrUpdateShow"
+    />
   </div>
 </template>
 
@@ -81,18 +86,22 @@ export default {
     return {
       attrList: [],
       loading: false,
+      isAddOrUpdateShow: false,
     };
   },
   computed: {
     ...mapState("category", ["category1Id", "category2Id", "category3Id"]),
   },
   watch: {
-    category3Id(newValue, oldValue) {
-      if (!this.category3Id) {
-        this.attrList = [];
-        return;
-      }
-      this.getAttrList();
+    category3Id: {
+      async handler() {
+        if (!this.category3Id) {
+          this.attrList = [];
+          return;
+        }
+        this.getAttrList();
+      },
+      immediate: true,
     },
   },
   components: {

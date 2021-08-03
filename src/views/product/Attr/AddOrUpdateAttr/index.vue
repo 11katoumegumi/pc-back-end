@@ -1,6 +1,6 @@
 <template>
   <el-card class="box-card">
-    <el-form inline :rules="rules" :model="attr">
+    <el-form inline :rules="rules" :model="attr" ref="form">
       <el-form-item label="属性名" prop="attrName">
         <el-input v-model="attr.attrName" placeholder="请输入属性名"></el-input>
       </el-form-item>
@@ -22,21 +22,27 @@
     >
       <el-table-column type="index" align="center" label="序号" width="50">
       </el-table-column>
+
       <el-table-column label="属性值名称">
         <template v-slot="{ row, $index }">
           <el-input
-            :id="`input${$index}`"
+            :id="`input${row.id}`"
             size="mini"
             placeholder="请输入属性值名称"
-            v-model="row.valueName"
-            @change="setAttrValue($index)"
+            v-model="attr.valueName"
+            @blur="setAttrValue($index, row)"
+            @keyup.enter.native="$event.target.blur()"
             v-show="row.isSpanHide"
           ></el-input>
-          <span v-show="!row.isSpanHide" @click="isSpanHide = true">{{
-            row.valueName
-          }}</span>
+          <span
+            v-show="!row.isSpanHide"
+            @click="handleSpanClick(row)"
+            class="inlineBlockSpan"
+            >{{ row.valueName }}</span
+          >
         </template>
       </el-table-column>
+
       <el-table-column label="操作">
         <template v-slot="{ row, $index }">
           <el-tooltip
@@ -55,12 +61,16 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-button type="primary" class="btnWithTopMargin">确定</el-button>
-    <el-button class="btnWithTopMargin">取消</el-button>
+    <el-button type="primary" class="btnWithTopMargin" @click="SaveAttrInfo"
+      >确定</el-button
+    >
+    <el-button class="btnWithTopMargin" @click="ClearAndGoback">取消</el-button>
   </el-card>
 </template>
 
 <script>
+import { reqSaveAttrInfo } from "../../../../api/product/attr";
+import { mapState } from "vuex";
 export default {
   name: "AddOrUpdateAttr",
   data() {
@@ -77,31 +87,108 @@ export default {
       },
     };
   },
+  computed: {
+    ...mapState("category", ["category1Id", "category2Id", "category3Id"]),
+  },
+  props: {
+    categoryId: {
+      type: Number,
+    },
+  },
   methods: {
     addAttrValue() {
+      if (
+        this.attrValueList.some((item) => item.isSpanHide === true) &&
+        !this.attr.valueName
+      ) {
+        return;
+      }
+      const id = this.attrValueList.length
+        ? this.attrValueList[this.attrValueList.length - 1].id + 1
+        : 1;
       this.attrValueList.push({
-        id: this.attrValueList.length
-          ? this.attrValueList[this.attrValueList.length - 1].id + 1
-          : 1,
+        id,
         valueName: "",
         isSpanHide: true,
       });
       this.$nextTick(() => {
-        this.$refs.input.focus();
+        //this.$refs.input.focus();
+        document.querySelector(`#input${id}`).focus();
       });
     },
-
-    setAttrValue(index) {
-      if (!this.attrValueList[index].valueName) {
-        this.$refs.input.focus();
-        document.querySelector(`#input${index}`).focus();
+    ClearAndGoback() {
+      this.attrValueList = [];
+      this.attr = {
+        attrName: "",
+        valueName: "", // 临时属性值
+        isSpanHide: true,
+      };
+      this.$emit("update:isAddOrUpdateShow", false);
+    },
+    setAttrValue(index, row) {
+      if (!this.attr.valueName) {
+        document.querySelector(`#input${row.id}`).focus();
         return;
       }
+
+      if (
+        this.attrValueList
+          .filter((iten) => iten.id !== row.id)
+          .some((item) => item.valueName === row.valueName)
+      ) {
+        this.$message({
+          message: "不能输入相同的属性值名称",
+          type: "warning",
+        });
+        return;
+      }
+      row.valueName = this.attr.valueName;
+      this.attr.valueName = "";
       this.attrValueList[index].isSpanHide = false;
     },
 
     deleteAttrValue(index) {
       this.attrValueList.splice(index, 1);
+    },
+    handleSpanClick(row) {
+      if (
+        this.attrValueList.some((item) => item.isSpanHide === true) &&
+        !this.attr.valueName
+      ) {
+        this.$message({
+          message: "请填写属性值名称",
+          type: "warning",
+        });
+        return;
+      }
+      row.isSpanHide = true;
+      this.$nextTick(() => {
+        //this.$refs.input.focus();
+        document.querySelector(`#input${row.id}`).focus();
+      });
+    },
+    async SaveAttrInfo() {
+      this.$refs.form.validate(async (valid) => {
+        if (!valid) {
+          return;
+        }
+        if (!attrValueList.length) {
+          this.$message({
+            type: "error",
+            message: "请添加至少一个属性值",
+          });
+          return;
+        }
+        const { attrName } = this.attr;
+        const { attrValueList, category3Id } = this;
+        await reqSaveAttrInfo({
+          attrName,
+          attrValueList,
+          categoryId: category3Id,
+          categoryLevel: 3,
+        });
+        this.ClearAndGoback();
+      });
     },
   },
 };
@@ -113,5 +200,9 @@ export default {
 }
 .btnWithBottomMargin {
   margin-bottom: 20px;
+}
+.inlineBlockSpan {
+  display: inline-block;
+  width: 100%;
 }
 </style>

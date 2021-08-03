@@ -190,6 +190,7 @@ export default {
       this.isUpdate = false;
       this.visible = true;
       // 清空表单
+
       //可选链式语法
       this.$refs.form?.resetFields();
       //清空trademark以表单
@@ -203,7 +204,6 @@ export default {
       this.isUpdate = true;
       this.visible = true;
       // 清空表单
-      //可选链式语法
       this.trademark = { ...row };
     },
 
