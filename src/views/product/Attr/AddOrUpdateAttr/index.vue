@@ -172,6 +172,8 @@ export default {
         if (!valid) {
           return;
         }
+        const { attrName } = this.attr;
+        const { attrValueList, category3Id } = this;
         if (!attrValueList.length) {
           this.$message({
             type: "error",
@@ -179,8 +181,7 @@ export default {
           });
           return;
         }
-        const { attrName } = this.attr;
-        const { attrValueList, category3Id } = this;
+
         await reqSaveAttrInfo({
           attrName,
           attrValueList,

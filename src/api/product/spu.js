@@ -31,3 +31,11 @@ export function reqDeleteSpu(spuId) {
     url: `/admin/product/deleteSpu/${spuId}`
   });
 }
+
+export function reqSaveSpuInfo(data) {
+  return request({
+    method: "post",
+    url: "/admin/product/saveSpuInfo",
+    data
+  });
+}

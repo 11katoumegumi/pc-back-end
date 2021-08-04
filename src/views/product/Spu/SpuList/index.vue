@@ -6,6 +6,7 @@
         icon="el-icon-plus"
         :disabled="!category3Id"
         class="btn"
+        @click="handleAddClick"
       >
         添加属性</el-button
       >
@@ -33,6 +34,7 @@
                 type="primary"
                 icon="el-icon-plus"
                 size="small"
+                @click="handleAddSku"
               ></el-button>
             </el-tooltip>
 
@@ -147,6 +149,12 @@ export default {
         });
         this.getSpuList(this.currentPage, this.pageSize);
       });
+    },
+    handleAddClick() {
+      this.$emit("changeIsShow", 2);
+    },
+    handleAddSku() {
+      this.$emit("changeIsShow", 3);
     },
   },
   watch: {
