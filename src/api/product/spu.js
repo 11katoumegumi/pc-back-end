@@ -39,3 +39,10 @@ export function reqSaveSpuInfo(data) {
     data
   });
 }
+export function reqUpdateSpuInfo(data) {
+  return request({
+    method: "post",
+    url: "/admin/product/updateSpuInfo",
+    data
+  });
+}

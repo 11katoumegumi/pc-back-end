@@ -1,5 +1,5 @@
 const state = {
-  spuId: "1740"
+  spuId: ""
 };
 const actions = {};
 const mutations = {

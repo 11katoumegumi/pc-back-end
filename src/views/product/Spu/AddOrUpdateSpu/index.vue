@@ -31,6 +31,7 @@
           :on-success="handleAvatarSuccess"
           :before-upload="beforeAvatarUpload"
           accept="image/jpeg,image/png"
+          :file-list="spu.spuImageList"
           :class="{ 'spu-img-upload': spu.spuImageList.length >= 3 }"
         >
           <i class="el-icon-plus"></i>
@@ -137,7 +138,12 @@ import {
   reqGetSaleAttrList,
   reqGetSpuSaleAttrList,
   reqSaveSpuInfo,
+  reqUpdateSpuInfo,
 } from "../../../../api/product/spu";
+import {
+  reqSpuImageListBySpuId,
+  reqSpuBySpuId,
+} from "../../../../api/product/sku";
 import { mapState } from "vuex";
 export default {
   name: "AddOrUpdateSpu",
@@ -170,10 +176,13 @@ export default {
       baseSaleAttr: "",
       baseSaleAttrList: [],
       spuSaleAttrValueName: "",
-
+      list: [],
       spu: {
+        spuName: "",
+        description: "",
         trademarkList: [],
         spuImageList: [],
+        spuImageListForShow: [],
         spuSaleAttrList: [],
       },
       rules: {
@@ -196,16 +205,32 @@ export default {
   },
   computed: {
     ...mapState("category", ["category3Id"]),
+    ...mapState("spu", ["spuId"]),
   },
   async mounted() {
     const res = await Promise.allSettled([
       reqGetTrademarkList(),
       reqGetSaleAttrList(),
-      reqGetSpuSaleAttrList(),
+      reqGetSpuSaleAttrList(this.spuId),
+      reqSpuImageListBySpuId(this.spuId),
+      reqSpuBySpuId(this.spuId),
     ]);
+    this.spu = res[4].value;
     this.spu.trademarkList = res[0].value;
     this.baseSaleAttrList = res[1].value;
-    //this.spu.spuSaleAttrList = res[2].value.spuSaleAttrList;
+    this.spu.spuSaleAttrList = res[2].value.spuSaleAttrList;
+    this.spu.spuImageList = res[3].value;
+
+    this.spu.spuSaleAttrList.forEach((sSaleAttr) => {
+      console.log(sSaleAttr.saleAttrName);
+      this.list.push(sSaleAttr.saleAttrName);
+    });
+    this.baseSaleAttrList = this.baseSaleAttrList.filter((bSaleAttr) => {
+      return this.list.indexOf(bSaleAttr.name) === -1;
+    });
+    this.spu.spuImageList = this.spu.spuImageList.map((item) => {
+      return { ...item, url: item.imgUrl };
+    });
   },
   methods: {
     // 上传成功触发的回调
@@ -214,6 +239,7 @@ export default {
       this.spu.spuImageList.push({
         imgName: file.name,
         imgUrl: res.data,
+        url: res.data,
       });
       // this.trademark.logoUrl = res.data;
       // 清空图片表单校验结果
@@ -241,8 +267,9 @@ export default {
     handleRemove(file, fileList) {
       // console.log(file, fileList);
       // 将数据删除
+      console.log(file);
       this.spu.spuImageList = this.spu.spuImageList.filter(
-        (img) => img.imgUrl !== file.response.data
+        (img) => img.imgUrl !== file.imgUrl
       );
     },
     handlePictureCardPreview(file) {
@@ -316,6 +343,28 @@ export default {
           this.$message({
             type: "success",
             message: "添加成功!",
+          });
+        }
+      });
+    },
+    updateSubmit() {
+      this.$refs.form.validate(async (valid) => {
+        if (valid) {
+          const { category3Id } = this;
+          const { spuName, tmId, description, spuImageList, spuSaleAttrList } =
+            this.spu;
+          const data = {
+            category3Id,
+            spuName,
+            tmId,
+            description,
+            spuImageList,
+            spuSaleAttrList,
+          };
+          await reqUpdateSpuInfo(data);
+          this.$message({
+            type: "success",
+            message: "修改成功!",
           });
         }
       });

@@ -34,7 +34,7 @@
                 type="primary"
                 icon="el-icon-plus"
                 size="small"
-                @click="handleAddSku"
+                @click="handleAddSku(row)"
               ></el-button>
             </el-tooltip>
 
@@ -48,6 +48,7 @@
                 type="warning"
                 icon="el-icon-edit"
                 size="small"
+                @click="handleUpdateSpu(row)"
               ></el-button>
             </el-tooltip>
 
@@ -96,7 +97,7 @@
 
 <script>
 import { reqGetSpuList, reqDeleteSpu } from "../../../../api/product/spu";
-import { mapState } from "vuex";
+import { mapState, mapMutations } from "vuex";
 export default {
   name: "SpuList",
   data() {
@@ -113,6 +114,7 @@ export default {
   },
   components: {},
   methods: {
+    ...mapMutations("spu", ["SET_SPU_ID"]),
     handleSizeChange(pageSize) {
       this.pageSize = pageSize;
       this.getSpuList(this.currentPage, pageSize);
@@ -153,8 +155,13 @@ export default {
     handleAddClick() {
       this.$emit("changeIsShow", 2);
     },
-    handleAddSku() {
+    handleAddSku(row) {
+      this.SET_SPU_ID(row.id);
       this.$emit("changeIsShow", 3);
+    },
+    handleUpdateSpu(row) {
+      this.SET_SPU_ID(row.id);
+      this.$emit("changeIsShow", 2);
     },
   },
   watch: {
