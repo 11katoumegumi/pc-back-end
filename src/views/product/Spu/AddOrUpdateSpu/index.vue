@@ -205,32 +205,41 @@ export default {
   },
   computed: {
     ...mapState("category", ["category3Id"]),
-    ...mapState("spu", ["spuId"]),
+    ...mapState("spu", ["spuId", "isUpdate"]),
   },
   async mounted() {
-    const res = await Promise.allSettled([
-      reqGetTrademarkList(),
-      reqGetSaleAttrList(),
-      reqGetSpuSaleAttrList(this.spuId),
-      reqSpuImageListBySpuId(this.spuId),
-      reqSpuBySpuId(this.spuId),
-    ]);
-    this.spu = res[4].value;
-    this.spu.trademarkList = res[0].value;
-    this.baseSaleAttrList = res[1].value;
-    this.spu.spuSaleAttrList = res[2].value.spuSaleAttrList;
-    this.spu.spuImageList = res[3].value;
+    if (this.isUpdate) {
+      const res = await Promise.allSettled([
+        reqGetTrademarkList(),
+        reqGetSaleAttrList(),
+        reqGetSpuSaleAttrList(this.spuId),
+        reqSpuImageListBySpuId(this.spuId),
+        reqSpuBySpuId(this.spuId),
+      ]);
+      this.spu = res[4].value;
+      this.spu.trademarkList = res[0].value;
+      this.baseSaleAttrList = res[1].value;
+      this.spu.spuSaleAttrList = res[2].value.spuSaleAttrList;
+      this.spu.spuImageList = res[3].value;
 
-    this.spu.spuSaleAttrList.forEach((sSaleAttr) => {
-      console.log(sSaleAttr.saleAttrName);
-      this.list.push(sSaleAttr.saleAttrName);
-    });
-    this.baseSaleAttrList = this.baseSaleAttrList.filter((bSaleAttr) => {
-      return this.list.indexOf(bSaleAttr.name) === -1;
-    });
-    this.spu.spuImageList = this.spu.spuImageList.map((item) => {
-      return { ...item, url: item.imgUrl };
-    });
+      this.spu.spuSaleAttrList.forEach((sSaleAttr) => {
+        console.log(sSaleAttr.saleAttrName);
+        this.list.push(sSaleAttr.saleAttrName);
+      });
+      this.baseSaleAttrList = this.baseSaleAttrList.filter((bSaleAttr) => {
+        return this.list.indexOf(bSaleAttr.name) === -1;
+      });
+      this.spu.spuImageList = this.spu.spuImageList.map((item) => {
+        return { ...item, url: item.imgUrl };
+      });
+    } else {
+      const res = await Promise.allSettled([
+        reqGetTrademarkList(),
+        reqGetSaleAttrList(),
+      ]);
+      this.spu.trademarkList = res[0].value;
+      this.baseSaleAttrList = res[1].value;
+    }
   },
   methods: {
     // 上传成功触发的回调
@@ -328,7 +337,7 @@ export default {
     submit() {
       this.$refs.form.validate(async (valid) => {
         if (valid) {
-          const { category3Id } = this;
+          const { category3Id, spuId } = this;
           const { spuName, tmId, description, spuImageList, spuSaleAttrList } =
             this.spu;
           const data = {
@@ -339,33 +348,17 @@ export default {
             spuImageList,
             spuSaleAttrList,
           };
-          await reqSaveSpuInfo(data);
+          if (this.isUpdate) {
+            console.log(data);
+            await reqUpdateSpuInfo({ ...data, id: spuId });
+          } else {
+            await reqSaveSpuInfo(data);
+          }
           this.$message({
             type: "success",
-            message: "添加成功!",
+            message: `${this.isUpdate ? "修改" : "添加"}成功!`,
           });
-        }
-      });
-    },
-    updateSubmit() {
-      this.$refs.form.validate(async (valid) => {
-        if (valid) {
-          const { category3Id } = this;
-          const { spuName, tmId, description, spuImageList, spuSaleAttrList } =
-            this.spu;
-          const data = {
-            category3Id,
-            spuName,
-            tmId,
-            description,
-            spuImageList,
-            spuSaleAttrList,
-          };
-          await reqUpdateSpuInfo(data);
-          this.$message({
-            type: "success",
-            message: "修改成功!",
-          });
+          this.$emit("changeIsShow", 1);
         }
       });
     },

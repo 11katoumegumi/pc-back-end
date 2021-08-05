@@ -114,7 +114,7 @@ export default {
   },
   components: {},
   methods: {
-    ...mapMutations("spu", ["SET_SPU_ID"]),
+    ...mapMutations("spu", ["SET_SPU_ID", "SET_ISUPDATE"]),
     handleSizeChange(pageSize) {
       this.pageSize = pageSize;
       this.getSpuList(this.currentPage, pageSize);
@@ -153,6 +153,7 @@ export default {
       });
     },
     handleAddClick() {
+      this.SET_ISUPDATE(false);
       this.$emit("changeIsShow", 2);
     },
     handleAddSku(row) {
@@ -161,6 +162,7 @@ export default {
     },
     handleUpdateSpu(row) {
       this.SET_SPU_ID(row.id);
+      this.SET_ISUPDATE(true);
       this.$emit("changeIsShow", 2);
     },
   },
