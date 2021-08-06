@@ -6,6 +6,7 @@ import settings from './modules/settings'
 import user from './modules/user'
 import category from './modules/category'
 import spu from './modules/spu'
+import role from './modules/role'
 
 Vue.use(Vuex)
 
@@ -15,7 +16,8 @@ const store = new Vuex.Store({
     settings,
     user,
     category,
-    spu
+    spu,
+    role
   },
   getters
 })
