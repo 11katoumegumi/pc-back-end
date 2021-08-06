@@ -1,16 +1,16 @@
-import request from "../../utils/request";
+import request from '../../utils/request'
 
 export function reqGetAttrValueList(category1Id, category2Id, category3Id) {
   return request({
-    method: "get",
+    method: 'get',
     url: `/admin/product/attrInfoList/${category1Id}/${category2Id}/${category3Id}`
-  });
+  })
 }
 export function reqDeleteAttr(attrId) {
   return request({
-    method: "delete",
+    method: 'delete',
     url: `/admin/product/deleteAttr/${attrId}`
-  });
+  })
 }
 
 export function reqSaveAttrInfo({
@@ -21,8 +21,8 @@ export function reqSaveAttrInfo({
   id
 }) {
   return request({
-    method: "POST",
-    url: "/admin/product/saveAttrInfo",
+    method: 'POST',
+    url: '/admin/product/saveAttrInfo',
     data: {
       attrName,
       attrValueList,
@@ -30,5 +30,5 @@ export function reqSaveAttrInfo({
       categoryLevel,
       id
     }
-  });
+  })
 }

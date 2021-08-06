@@ -1,10 +1,10 @@
-import Vue from "vue";
-import Router from "vue-router";
+import Vue from 'vue'
+import Router from 'vue-router'
 
-Vue.use(Router);
+Vue.use(Router)
 
 /* Layout */
-import Layout from "@/layout";
+import Layout from '@/layout'
 
 /**
  * Note: sub-menu only appear when route children.length >= 1
@@ -32,73 +32,87 @@ import Layout from "@/layout";
  */
 export const constantRoutes = [
   {
-    path: "/login",
-    component: () => import("@/views/login/index"),
+    path: '/login',
+    component: () => import('@/views/login/index'),
     hidden: true
   },
 
   {
-    path: "/404",
-    component: () => import("@/views/404"),
+    path: '/404',
+    component: () => import('@/views/404'),
     hidden: true
   },
 
   {
-    path: "/",
+    path: '/',
     component: Layout,
-    redirect: "/dashboard",
+    redirect: '/dashboard',
     children: [
       {
-        path: "dashboard",
-        name: "Dashboard",
-        component: () => import("@/views/dashboard/index"),
-        meta: { title: "Dashboard", icon: "dashboard" }
+        path: 'dashboard',
+        name: 'Dashboard',
+        component: () => import('@/views/dashboard/index'),
+        meta: { title: 'Dashboard', icon: 'dashboard' }
       }
     ]
   },
   {
-    path: "/Test",
+    path: '/acl',
     component: Layout,
-    redirect: "/Test/index",
+    redirect: '/acl/table',
+    name: 'acl',
+    meta: { title: '权限管理', icon: 'el-icon-s-help' },
     children: [
       {
-        path: "/Test/index",
-        name: "TestIdex",
-        component: () => import("@/views/MyComponent/index.vue"),
-        meta: { title: "Test", icon: "dashboard" }
+        path: 'user/list',
+        name: 'User',
+        component: () => import('../views/acl/user/list.vue'),
+        meta: { title: '用户管理', icon: 'table' }
+      },
+      {
+        path: 'role/list',
+        name: 'Role',
+        component: () => import('../views/acl/role/list.vue'),
+        meta: { title: '角色管理', icon: 'table' }
+      },
+      {
+        path: 'permission/list',
+        name: 'Permission',
+        component: () => import('../views/acl/permission/list.vue'),
+        meta: { title: '菜单管理', icon: 'table' }
       }
     ]
   },
   {
-    path: "/product",
+    path: '/product',
     component: Layout,
-    redirect: "/product/table",
-    name: "Product",
-    meta: { title: "商品管理", icon: "el-icon-s-help" },
+    redirect: '/product/table',
+    name: 'Product',
+    meta: { title: '商品管理', icon: 'el-icon-s-help' },
     children: [
       {
-        path: "attr/list",
-        name: "Attr",
-        component: () => import("@/views/product/Attr"),
-        meta: { title: "属性管理", icon: "table" }
+        path: 'attr/list',
+        name: 'Attr',
+        component: () => import('@/views/product/Attr'),
+        meta: { title: '属性管理', icon: 'table' }
       },
       {
-        path: "sku/list",
-        name: "Sku",
-        component: () => import("@/views/product/Sku"),
-        meta: { title: "Sku管理", icon: "table" }
+        path: 'sku/list',
+        name: 'Sku',
+        component: () => import('@/views/product/Sku'),
+        meta: { title: 'Sku管理', icon: 'table' }
       },
       {
-        path: "spu/list",
-        name: "Spu",
-        component: () => import("@/views/product/Spu"),
-        meta: { title: "Spu管理", icon: "table" }
+        path: 'spu/list',
+        name: 'Spu',
+        component: () => import('@/views/product/Spu'),
+        meta: { title: 'Spu管理', icon: 'table' }
       },
       {
-        path: "trademark/list",
-        name: "Trademark",
-        component: () => import("@/views/product/Trademark"),
-        meta: { title: "商标管理", icon: "table" }
+        path: 'trademark/list',
+        name: 'Trademark',
+        component: () => import('@/views/product/Trademark'),
+        meta: { title: '商标管理', icon: 'table' }
       }
     ]
   },
@@ -202,22 +216,22 @@ export const constantRoutes = [
  */
 
   // 404 page must be placed at the end !!!
-  { path: "*", redirect: "/404", hidden: true }
-];
+  { path: '*', redirect: '/404', hidden: true }
+]
 
 const createRouter = () =>
   new Router({
     // mode: 'history', // require service support
     scrollBehavior: () => ({ y: 0 }),
     routes: constantRoutes
-  });
+  })
 
-const router = createRouter();
+const router = createRouter()
 
 // Detail see: https://github.com/vuejs/vue-router/issues/1234#issuecomment-357941465
 export function resetRouter() {
-  const newRouter = createRouter();
-  router.matcher = newRouter.matcher; // reset router
+  const newRouter = createRouter()
+  router.matcher = newRouter.matcher // reset router
 }
 
-export default router;
+export default router

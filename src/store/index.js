@@ -1,13 +1,13 @@
-import Vue from "vue";
-import Vuex from "vuex";
-import getters from "./getters";
-import app from "./modules/app";
-import settings from "./modules/settings";
-import user from "./modules/user";
-import category from "./modules/category";
-import spu from "./modules/spu";
+import Vue from 'vue'
+import Vuex from 'vuex'
+import getters from './getters'
+import app from './modules/app'
+import settings from './modules/settings'
+import user from './modules/user'
+import category from './modules/category'
+import spu from './modules/spu'
 
-Vue.use(Vuex);
+Vue.use(Vuex)
 
 const store = new Vuex.Store({
   modules: {
@@ -18,6 +18,6 @@ const store = new Vuex.Store({
     spu
   },
   getters
-});
+})
 
-export default store;
+export default store

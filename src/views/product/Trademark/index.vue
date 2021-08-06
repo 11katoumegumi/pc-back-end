@@ -8,9 +8,13 @@
       class="container-table"
       v-loading="loading"
     >
-      <el-table-column label="序号" width="50" type="index" align="center">
-      </el-table-column>
-      <el-table-column prop="tmName" label="品牌名称"> </el-table-column>
+      <el-table-column
+        label="序号"
+        width="50"
+        type="index"
+        align="center"
+      ></el-table-column>
+      <el-table-column prop="tmName" label="品牌名称"></el-table-column>
       <el-table-column label="品牌LOGO">
         <!--
           可以通过作用域插槽，给当前列传递一个slotScoped对象里面包含了:
@@ -27,14 +31,16 @@
             type="warning"
             icon="el-icon-edit"
             @click="showUpdateTrademark(row)"
-            >修改</el-button
           >
+            修改
+          </el-button>
           <el-button
             type="danger"
             icon="el-icon-delete"
             @click="deleteTrademark(row)"
-            >删除</el-button
           >
+            删除
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -47,8 +53,7 @@
       :page-size="pageSize"
       layout="prev, pager, next, jumper, total, sizes"
       :total="total"
-    >
-    </el-pagination>
+    ></el-pagination>
 
     <el-dialog
       :visible.sync="visible"
@@ -91,13 +96,13 @@ import {
   reqGetTrademarkList,
   reqSaveTrademark,
   reqDeleteTrademark,
-  reqUpdateTrademark,
-} from "../../../api/product/trademark";
+  reqUpdateTrademark
+} from '../../../api/product/trademark'
 
 export default {
-  name: "Trademark",
+  name: 'Trademark',
   mounted() {
-    this.getTrademarkList(this.currentPage, this.pageSize);
+    this.getTrademarkList(this.currentPage, this.pageSize)
   },
   data() {
     return {
@@ -108,103 +113,103 @@ export default {
       loading: false,
       visible: false,
       trademark: {
-        tmName: "",
-        logoUrl: "",
+        tmName: '',
+        logoUrl: ''
       },
       baseAPI: process.env.VUE_APP_BASE_API,
       // 表单校验规则
       rules: {
         tmName: [
-          { required: true, message: "请输入品牌名称", trigger: "blur" },
+          { required: true, message: '请输入品牌名称', trigger: 'blur' }
         ],
         logoUrl: [
-          { required: true, message: "请上传品牌LOGO", trigger: "change" },
-        ],
+          { required: true, message: '请上传品牌LOGO', trigger: 'change' }
+        ]
       },
-      isUpdate: false,
-    };
+      isUpdate: false
+    }
   },
   methods: {
     async getTrademarkList(currentPage, pageSize) {
-      this.loading = true;
-      const res = await reqGetTrademarkList(currentPage, pageSize);
-      this.trademarkList = res.records;
-      this.total = res.total;
-      this.loading = false;
+      this.loading = true
+      const res = await reqGetTrademarkList(currentPage, pageSize)
+      this.trademarkList = res.records
+      this.total = res.total
+      this.loading = false
     },
     handleSizeChange(pageSize) {
-      this.pageSize = pageSize;
-      this.getTrademarkList(this.currentPage, pageSize);
+      this.pageSize = pageSize
+      this.getTrademarkList(this.currentPage, pageSize)
     },
     handleCurrentChange(currentPage) {
-      this.currentPage = currentPage;
-      this.getTrademarkList(currentPage, this.pageSize);
+      this.currentPage = currentPage
+      this.getTrademarkList(currentPage, this.pageSize)
     },
     // 上传成功触发
     handleAvatarSuccess(res) {
-      this.trademark.logoUrl = res.data;
+      this.trademark.logoUrl = res.data
       // 清空图片表单校验结果
-      this.$refs.form.clearValidate(["logoUrl"]);
+      this.$refs.form.clearValidate(['logoUrl'])
     },
     // 上传之前触发的回调
     beforeAvatarUpload(file) {
       // file 上传的图片文件信息
       // file.type 文件类型
-      const validFileType = ["image/jpeg", "image/jpg", "image/png"];
-      const isValidFileType = validFileType.indexOf(file.type) > -1;
+      const validFileType = ['image/jpeg', 'image/jpg', 'image/png']
+      const isValidFileType = validFileType.indexOf(file.type) > -1
       // file.size 文件大小
-      const isLt = file.size / 1024 < 500;
+      const isLt = file.size / 1024 < 500
 
       if (!isValidFileType) {
-        this.$message.error("上传头像图片只能是 JPG 或 PNG 格式!");
+        this.$message.error('上传头像图片只能是 JPG 或 PNG 格式!')
       }
       if (!isLt) {
-        this.$message.error("上传头像图片大小不能超过 500KB!");
+        this.$message.error('上传头像图片大小不能超过 500KB!')
       }
       //  true 可以上传
       // false 不会上传
-      return isValidFileType && isLt;
+      return isValidFileType && isLt
     },
     // 添加或修改品牌
     handleTrademark() {
-      this.$refs.form.validate(async (valid) => {
+      this.$refs.form.validate(async valid => {
         if (valid) {
-          const { tmName, logoUrl } = this.trademark;
+          const { tmName, logoUrl } = this.trademark
 
           if (this.isUpdate) {
-            reqUpdateTrademark(this.trademark);
+            reqUpdateTrademark(this.trademark)
           } else {
-            await reqSaveTrademark(tmName, logoUrl);
+            await reqSaveTrademark(tmName, logoUrl)
           }
           this.$message({
-            type: "success",
-            message: `${this.isUpdate ? "更新" : "添加"}品牌成功~`,
-          });
-          await this.getTrademarkList(this.currentPage, this.pageSize);
-          this.visible = false;
+            type: 'success',
+            message: `${this.isUpdate ? '更新' : '添加'}品牌成功~`
+          })
+          await this.getTrademarkList(this.currentPage, this.pageSize)
+          this.visible = false
         }
-      });
+      })
     },
     // 显示添加品牌对话框
     showSaveTrademark() {
-      this.isUpdate = false;
-      this.visible = true;
+      this.isUpdate = false
+      this.visible = true
       // 清空表单
 
       //可选链式语法
-      this.$refs.form?.resetFields();
+      this.$refs.form?.resetFields()
       //清空trademark以表单
       this.trademark = {
-        tmName: "",
-        logoUrl: "",
-      };
+        tmName: '',
+        logoUrl: ''
+      }
     },
     // 显示更新品牌对话框
     showUpdateTrademark(row) {
-      this.isUpdate = true;
-      this.visible = true;
+      this.isUpdate = true
+      this.visible = true
       // 清空表单
-      this.trademark = { ...row };
+      this.trademark = { ...row }
     },
 
     deleteTrademark(row) {
@@ -212,26 +217,26 @@ export default {
         `此操作将永久删除 <span style='color:red'>${row.tmName} </span>, 是否继续?`,
         `提示`,
         {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning",
-          dangerouslyUseHTMLString: "true",
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
+          dangerouslyUseHTMLString: 'true'
         }
       ).then(async () => {
-        await reqDeleteTrademark(row.id);
+        await reqDeleteTrademark(row.id)
 
         this.$message({
-          type: "success",
-          message: "删除成功!",
-        });
+          type: 'success',
+          message: '删除成功!'
+        })
         if (this.trademarkList.length === 1 && this.currentPage !== 1) {
-          this.currentPage--;
+          this.currentPage--
         }
-        await this.getTrademarkList(this.currentPage, this.pageSize);
-      });
-    },
-  },
-};
+        await this.getTrademarkList(this.currentPage, this.pageSize)
+      })
+    }
+  }
+}
 </script>
 
 <style lang="sass">

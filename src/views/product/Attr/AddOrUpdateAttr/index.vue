@@ -11,8 +11,9 @@
       class="btnWithBottomMargin"
       :disabled="!attr.attrName"
       @click="addAttrValue"
-      >添加属性值</el-button
     >
+      添加属性值
+    </el-button>
     <el-table
       :data="attrValueList"
       :disabled="!attr.attrName"
@@ -20,8 +21,12 @@
       class="container-table"
       v-loading="loading"
     >
-      <el-table-column type="index" align="center" label="序号" width="50">
-      </el-table-column>
+      <el-table-column
+        type="index"
+        align="center"
+        label="序号"
+        width="50"
+      ></el-table-column>
 
       <el-table-column label="属性值名称">
         <template v-slot="{ row, $index }">
@@ -38,8 +43,9 @@
             v-show="!row.isSpanHide"
             @click="handleSpanClick(row)"
             class="inlineBlockSpan"
-            >{{ row.valueName }}</span
           >
+            {{ row.valueName }}
+          </span>
         </template>
       </el-table-column>
 
@@ -61,138 +67,138 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-button type="primary" class="btnWithTopMargin" @click="SaveAttrInfo"
-      >确定</el-button
-    >
+    <el-button type="primary" class="btnWithTopMargin" @click="SaveAttrInfo">
+      确定
+    </el-button>
     <el-button class="btnWithTopMargin" @click="ClearAndGoback">取消</el-button>
   </el-card>
 </template>
 
 <script>
-import { reqSaveAttrInfo } from "../../../../api/product/attr";
-import { mapState } from "vuex";
+import { reqSaveAttrInfo } from '../../../../api/product/attr'
+import { mapState } from 'vuex'
 export default {
-  name: "AddOrUpdateAttr",
+  name: 'AddOrUpdateAttr',
   data() {
     return {
       attrValueList: [],
       loading: false,
       attr: {
-        attrName: "",
-        valueName: "", // 临时属性值
-        isSpanHide: true,
+        attrName: '',
+        valueName: '', // 临时属性值
+        isSpanHide: true
       },
       rules: {
-        attrName: { required: true, message: "请输入属性名", trigger: "blur" },
-      },
-    };
+        attrName: { required: true, message: '请输入属性名', trigger: 'blur' }
+      }
+    }
   },
   computed: {
-    ...mapState("category", ["category1Id", "category2Id", "category3Id"]),
+    ...mapState('category', ['category1Id', 'category2Id', 'category3Id'])
   },
   props: {
     categoryId: {
-      type: Number,
-    },
+      type: Number
+    }
   },
   methods: {
     addAttrValue() {
       if (
-        this.attrValueList.some((item) => item.isSpanHide === true) &&
+        this.attrValueList.some(item => item.isSpanHide === true) &&
         !this.attr.valueName
       ) {
-        return;
+        return
       }
       const id = this.attrValueList.length
         ? this.attrValueList[this.attrValueList.length - 1].id + 1
-        : 1;
+        : 1
       this.attrValueList.push({
         id,
-        valueName: "",
-        isSpanHide: true,
-      });
+        valueName: '',
+        isSpanHide: true
+      })
       this.$nextTick(() => {
         //this.$refs.input.focus();
-        document.querySelector(`#input${id}`).focus();
-      });
+        document.querySelector(`#input${id}`).focus()
+      })
     },
     ClearAndGoback() {
-      this.attrValueList = [];
+      this.attrValueList = []
       this.attr = {
-        attrName: "",
-        valueName: "", // 临时属性值
-        isSpanHide: true,
-      };
-      this.$emit("update:isAddOrUpdateShow", false);
+        attrName: '',
+        valueName: '', // 临时属性值
+        isSpanHide: true
+      }
+      this.$emit('update:isAddOrUpdateShow', false)
     },
     setAttrValue(index, row) {
       if (!this.attr.valueName) {
-        document.querySelector(`#input${row.id}`).focus();
-        return;
+        document.querySelector(`#input${row.id}`).focus()
+        return
       }
 
       if (
         this.attrValueList
-          .filter((iten) => iten.id !== row.id)
-          .some((item) => item.valueName === row.valueName)
+          .filter(iten => iten.id !== row.id)
+          .some(item => item.valueName === row.valueName)
       ) {
         this.$message({
-          message: "不能输入相同的属性值名称",
-          type: "warning",
-        });
-        return;
+          message: '不能输入相同的属性值名称',
+          type: 'warning'
+        })
+        return
       }
-      row.valueName = this.attr.valueName;
-      this.attr.valueName = "";
-      this.attrValueList[index].isSpanHide = false;
+      row.valueName = this.attr.valueName
+      this.attr.valueName = ''
+      this.attrValueList[index].isSpanHide = false
     },
 
     deleteAttrValue(index) {
-      this.attrValueList.splice(index, 1);
+      this.attrValueList.splice(index, 1)
     },
     handleSpanClick(row) {
       if (
-        this.attrValueList.some((item) => item.isSpanHide === true) &&
+        this.attrValueList.some(item => item.isSpanHide === true) &&
         !this.attr.valueName
       ) {
         this.$message({
-          message: "请填写属性值名称",
-          type: "warning",
-        });
-        return;
+          message: '请填写属性值名称',
+          type: 'warning'
+        })
+        return
       }
-      row.isSpanHide = true;
+      row.isSpanHide = true
       this.$nextTick(() => {
         //this.$refs.input.focus();
-        document.querySelector(`#input${row.id}`).focus();
-      });
+        document.querySelector(`#input${row.id}`).focus()
+      })
     },
     async SaveAttrInfo() {
-      this.$refs.form.validate(async (valid) => {
+      this.$refs.form.validate(async valid => {
         if (!valid) {
-          return;
+          return
         }
-        const { attrName } = this.attr;
-        const { attrValueList, category3Id } = this;
+        const { attrName } = this.attr
+        const { attrValueList, category3Id } = this
         if (!attrValueList.length) {
           this.$message({
-            type: "error",
-            message: "请添加至少一个属性值",
-          });
-          return;
+            type: 'error',
+            message: '请添加至少一个属性值'
+          })
+          return
         }
 
         await reqSaveAttrInfo({
           attrName,
           attrValueList,
           categoryId: category3Id,
-          categoryLevel: 3,
-        });
-        this.ClearAndGoback();
-      });
-    },
-  },
-};
+          categoryLevel: 3
+        })
+        this.ClearAndGoback()
+      })
+    }
+  }
+}
 </script>
 
 <style>

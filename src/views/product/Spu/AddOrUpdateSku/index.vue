@@ -12,8 +12,8 @@
           controls-position="right"
           :min="1"
           v-model="sku.price"
-        ></el-input-number
-      ></el-form-item>
+        ></el-input-number>
+      </el-form-item>
       <el-form-item label="重量">
         <el-input-number
           controls-position="right"
@@ -21,13 +21,13 @@
           v-model="sku.weight"
         ></el-input-number>
       </el-form-item>
-      <el-form-item label="SKU描述"
-        ><el-input
+      <el-form-item label="SKU描述">
+        <el-input
           type="textarea"
           placeholder="请输入SKU描述"
           v-model="sku.skuDesc"
-        ></el-input
-      ></el-form-item>
+        ></el-input>
+      </el-form-item>
       <el-form-item label="平台属性">
         <el-row>
           <el-col
@@ -46,7 +46,9 @@
                   v-for="attrValue in attr.attrValueList"
                   :key="attrValue.id"
                   :label="attrValue.valueName"
-                  :value="`${attr.id}:${attr.attrName}:${attrValue.id}:${attrValue.valueName}`"
+                  :value="
+                    `${attr.id}:${attr.attrName}:${attrValue.id}:${attrValue.valueName}`
+                  "
                 ></el-option>
               </el-select>
             </el-form-item>
@@ -71,7 +73,9 @@
                   v-for="ssav in spuSaleAttr.spuSaleAttrValueList"
                   :key="ssav.id"
                   :label="ssav.saleAttrValueName"
-                  :value="`${spuSaleAttr.id}:${spuSaleAttr.saleAttrName}:${ssav.id}:${ssav.saleAttrName}`"
+                  :value="
+                    `${spuSaleAttr.id}:${spuSaleAttr.saleAttrName}:${ssav.id}:${ssav.saleAttrName}`
+                  "
                 ></el-option>
               </el-select>
             </el-form-item>
@@ -90,9 +94,10 @@
           ></el-table-column>
           <el-table-column label="图片">
             <template v-slot="{ row }">
-              <img :src="row.imgUrl" class="table-image" /> </template
-          ></el-table-column>
-          <el-table-column label="名称" prop="imgName"> </el-table-column>
+              <img :src="row.imgUrl" class="table-image" />
+            </template>
+          </el-table-column>
+          <el-table-column label="名称" prop="imgName"></el-table-column>
           <el-table-column label="操作">
             <template v-slot="{ row }">
               <el-button
@@ -100,15 +105,17 @@
                 size="mini"
                 v-show="row.isDefault === '0'"
                 @click="setDefaultImage(row)"
-                >设置默认图片</el-button
               >
+                设置默认图片
+              </el-button>
               <el-button
                 type="success"
                 size="mini"
                 v-show="row.isDefault === '1'"
                 disabled
-                >默认图片</el-button
               >
+                默认图片
+              </el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -127,17 +134,17 @@
 import {
   reqSpuBySpuId,
   reqSpuImageListBySpuId,
-  reqSaveSkuInfo,
-} from "../../../../api/product/sku";
+  reqSaveSkuInfo
+} from '../../../../api/product/sku'
 
-import { reqGetAttrValueList } from "../../../../api/product/attr";
+import { reqGetAttrValueList } from '../../../../api/product/attr'
 
-import { mapState } from "vuex";
+import { mapState } from 'vuex'
 export default {
-  name: "AddOrUpdateSku",
+  name: 'AddOrUpdateSku',
   computed: {
-    ...mapState("category", ["category1Id", "category2Id", "category3Id"]),
-    ...mapState("spu", ["spuId"]),
+    ...mapState('category', ['category1Id', 'category2Id', 'category3Id']),
+    ...mapState('spu', ['spuId'])
   },
   data() {
     return {
@@ -145,49 +152,49 @@ export default {
       spuImageList: [],
       attrList: [],
       sku: {
-        skuName: "",
-        price: "",
-        weight: "",
-        skuDesc: "",
+        skuName: '',
+        price: '',
+        weight: '',
+        skuDesc: '',
         skuAttrValueList: [],
         skuSaleAttrValueList: [],
         skuImageList: [],
-        skuDefaultImg: "",
-      },
-    };
+        skuDefaultImg: ''
+      }
+    }
   },
   async mounted() {
-    const { spuId, category1Id, category2Id, category3Id } = this;
+    const { spuId, category1Id, category2Id, category3Id } = this
     const [spuRes, spuImageListRes, AttrListRes] = await Promise.allSettled([
       reqSpuBySpuId(spuId),
       reqSpuImageListBySpuId(spuId),
-      reqGetAttrValueList(15, 91, 861),
-    ]);
+      reqGetAttrValueList(15, 91, 861)
+    ])
 
-    if (spuRes.status === "fulfilled") {
-      this.spu = spuRes.value;
+    if (spuRes.status === 'fulfilled') {
+      this.spu = spuRes.value
     }
-    if (spuImageListRes.status === "fulfilled") {
-      this.spuImageList = spuImageListRes.value.map((item) => {
-        return { ...item, isDefault: "0" };
-      });
+    if (spuImageListRes.status === 'fulfilled') {
+      this.spuImageList = spuImageListRes.value.map(item => {
+        return { ...item, isDefault: '0' }
+      })
     }
-    if (AttrListRes.status === "fulfilled") {
-      this.attrList = AttrListRes.value;
+    if (AttrListRes.status === 'fulfilled') {
+      this.attrList = AttrListRes.value
     }
   },
   methods: {
     handleSelectionChange(value) {
-      this.sku.skuImageList = value;
+      this.sku.skuImageList = value
     },
     setDefaultImage(row) {
-      this.spuImageList.map((item) => (item.isDefault = "0"));
-      row.isDefault = "1";
-      this.sku.skuDefaultImg = row.imgUrl;
+      this.spuImageList.map(item => (item.isDefault = '0'))
+      row.isDefault = '1'
+      this.sku.skuDefaultImg = row.imgUrl
     },
     async submit() {
-      const { category3Id, spuId } = this;
-      const { tmId } = this.spu;
+      const { category3Id, spuId } = this
+      const { tmId } = this.spu
       const {
         price,
         skuAttrValueList,
@@ -196,20 +203,20 @@ export default {
         skuImageList,
         skuName,
         skuSaleAttrValueList,
-        weight,
-      } = this.sku;
-      const newSkuImageList = skuImageList.filter(Boolean);
+        weight
+      } = this.sku
+      const newSkuImageList = skuImageList.filter(Boolean)
       const data = {
         category3Id,
         price,
-        skuAttrValueList: skuAttrValueList.filter(Boolean).map((attr) => {
-          const [attrId, attrName, valueId, valueName] = attr.split(":");
+        skuAttrValueList: skuAttrValueList.filter(Boolean).map(attr => {
+          const [attrId, attrName, valueId, valueName] = attr.split(':')
           return {
             attrId,
             attrName,
             valueId,
-            valueName,
-          };
+            valueName
+          }
         }),
         skuDefaultImg,
         skuDesc,
@@ -217,37 +224,37 @@ export default {
         skuName,
         skuSaleAttrValueList: skuSaleAttrValueList
           .filter(Boolean)
-          .map((saleAttr) => {
+          .map(saleAttr => {
             const [
               saleAttrId,
               saleAttrName,
               saleAttrValueId,
-              saleAttrValueName,
-            ] = saleAttr.split(":");
+              saleAttrValueName
+            ] = saleAttr.split(':')
             return {
               saleAttrId,
               saleAttrName,
               saleAttrValueId,
-              saleAttrValueName,
-            };
+              saleAttrValueName
+            }
           }),
         spuId,
         tmId,
-        weight,
-      };
-      console.log(data);
-      await reqSaveSkuInfo(data);
+        weight
+      }
+      console.log(data)
+      await reqSaveSkuInfo(data)
 
       this.$message({
-        type: "success",
-        message: "添加SKU成功",
-      });
+        type: 'success',
+        message: '添加SKU成功'
+      })
     },
     handleCancel() {
-      this.$emit("changeIsShow", 1);
-    },
-  },
-};
+      this.$emit('changeIsShow', 1)
+    }
+  }
+}
 </script>
 
 <style scoped>

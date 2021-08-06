@@ -8,30 +8,29 @@
 </template>
 
 <script>
-import AddOrUpdateSpu from "./AddOrUpdateSpu";
-import AddOrUpdateSku from "./AddOrUpdateSku";
-import SpuList from "./SpuList";
-import CategorySelector from "../../../components/CategorySelector";
+import AddOrUpdateSpu from './AddOrUpdateSpu'
+import AddOrUpdateSku from './AddOrUpdateSku'
+import SpuList from './SpuList'
+import CategorySelector from '../../../components/CategorySelector'
 export default {
-  name: "Spu",
+  name: 'Spu',
   data() {
     return {
-      isShow: 1,
-    };
+      isShow: 1
+    }
   },
   methods: {
     changeIsShow(value) {
-      this.isShow = value;
-    },
+      this.isShow = value
+    }
   },
   components: {
     CategorySelector,
     AddOrUpdateSpu,
     SpuList,
-    AddOrUpdateSku,
-  },
-};
+    AddOrUpdateSku
+  }
+}
 </script>
 
-<style>
-</style>
+<style></style>

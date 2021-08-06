@@ -12,8 +12,8 @@
         class="btn"
         @click="isAddOrUpdateShow = true"
       >
-        添加属性</el-button
-      >
+        添加属性
+      </el-button>
       <el-table
         :data="attrList"
         border
@@ -21,17 +21,21 @@
         class="attr_table"
         v-loading="loading"
       >
-        <el-table-column prop="categoryId" label="序号" width="50">
-        </el-table-column>
-        <el-table-column prop="attrName" label="属性名称"> </el-table-column>
+        <el-table-column
+          prop="categoryId"
+          label="序号"
+          width="50"
+        ></el-table-column>
+        <el-table-column prop="attrName" label="属性名称"></el-table-column>
         <el-table-column prop="attrValueList" label="属性值列表">
           <template v-slot="{ row }">
             <el-tag
               v-for="attrValue in row.attrValueList"
               :key="attrValue.id"
               class="tag"
-              >{{ attrValue.valueName }}</el-tag
             >
+              {{ attrValue.valueName }}
+            </el-tag>
           </template>
         </el-table-column>
 
@@ -75,74 +79,74 @@
 </template>
 
 <script>
-import AddOrUpdateAttr from "./AddOrUpdateAttr";
-import CategorySelector from "../../../components/CategorySelector";
-import { mapState } from "vuex";
-import { reqGetAttrValueList, reqDeleteAttr } from "../../../api/product/attr";
+import AddOrUpdateAttr from './AddOrUpdateAttr'
+import CategorySelector from '../../../components/CategorySelector'
+import { mapState } from 'vuex'
+import { reqGetAttrValueList, reqDeleteAttr } from '../../../api/product/attr'
 export default {
-  name: "Attr",
+  name: 'Attr',
   mounted() {},
   data() {
     return {
       attrList: [],
       loading: false,
-      isAddOrUpdateShow: false,
-    };
+      isAddOrUpdateShow: false
+    }
   },
   computed: {
-    ...mapState("category", ["category1Id", "category2Id", "category3Id"]),
+    ...mapState('category', ['category1Id', 'category2Id', 'category3Id'])
   },
   watch: {
     category3Id: {
       async handler() {
         if (!this.category3Id) {
-          this.attrList = [];
-          return;
+          this.attrList = []
+          return
         }
-        this.getAttrList();
+        this.getAttrList()
       },
-      immediate: true,
-    },
+      immediate: true
+    }
   },
   components: {
     CategorySelector,
-    AddOrUpdateAttr,
+    AddOrUpdateAttr
   },
   methods: {
     async getAttrList() {
-      this.loading = true;
+      this.loading = true
       const res = await reqGetAttrValueList(
         this.category1Id,
         this.category2Id,
         this.category3Id
-      );
-      this.loading = false;
-      this.attrList = res;
+      )
+      this.loading = false
+      this.attrList = res
     },
     async deleteAttr(row) {
       this.$confirm(
         `此操作将永久删除 ${row.attrName} 属性, 是否继续?`,
-        "提示",
+        '提示',
         {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning",
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
         }
       ).then(async () => {
-        await reqDeleteAttr(row.id);
+        await reqDeleteAttr(row.id)
 
         this.$message({
-          type: "success",
-          message: "删除成功!",
-        });
-        this.getAttrList();
-      });
-    },
-  },
-};
+          type: 'success',
+          message: '删除成功!'
+        })
+        this.getAttrList()
+      })
+    }
+  }
+}
 </script>
 
-<style  scoped>
+<style scoped>
 .tag {
   margin: 0 10px;
 }
